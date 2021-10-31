@@ -16,7 +16,7 @@ app = Flask(__name__)
 
 # Set the secret key to some random bytes. Keep this really secret!
 # Change the secret key to constant value while using gunicorn workers
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', os.urandom(24))
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'DEVPHOTART')
 print(app.config['SECRET_KEY'])
 
 
@@ -28,13 +28,13 @@ def scrape(filename=None):
     preLink = "https://raw.githubusercontent.com/puneet29/StyleTransferApp/master/images/style-images/"
     if(filename == None):
         page = "https://github.com/puneet29/StyleTransferApp/tree/master/images/style-images"
-        links = ['https://raw.githubusercontent.com/puneet29/StyleTransferApp/master/images/style-images/rickandmorty.jpg']
-        r = requests.get(page)
-        soup = BeautifulSoup(r.text, "html.parser")
-        tbody = soup.find("tbody")
-        photo_anchors = tbody.find_all("a", {"class": "js-navigation-open"})
-        for anchors in photo_anchors:
-            links.append(preLink+anchors['title'])
+        links = ['https://raw.githubusercontent.com/puneet29/StyleTransferApp/master/images/style-images/heisenberg.jpg']
+        # r = requests.get(page)
+        # soup = BeautifulSoup(r.text, "html.parser")
+        # tbody = soup.find("tbody")
+        # photo_anchors = tbody.find_all("a", {"class": "js-navigation-open"})
+        # for anchors in photo_anchors:
+           #  links.append(preLink+anchors['title'])
         return(links)
     else:
         return(preLink+filename)
@@ -44,7 +44,7 @@ def scrape(filename=None):
 def homepage():
     if 'file' in session:
         # S3 Bucket
-        bucketName = "styletransferbucket"
+        bucketName = "photartbucket"
         s3 = boto3.resource('s3')
         obj = s3.Object(bucketName, session['file'])
         obj.delete()
@@ -56,7 +56,7 @@ def homepage():
 def upload():
     if 'file' in session:
         # S3 Bucket
-        bucketName = "styletransferbucket"
+        bucketName = "photartbucket"
         s3 = boto3.resource('s3')
         obj = s3.Object(bucketName, session['file'])
         obj.delete()
@@ -65,23 +65,27 @@ def upload():
     if (request.method == 'GET'):
         return render_template('upload.html', styleName= style.upper(), stylePath=scrape(style+".jpg"))
     else:
-        if ('file' not in request.files):
+        print(request)
+        if ('imageUrl' not in request.form):
             flash('No file part')
+            print('no file part')
             return(redirect(request.url))
-        file = request.files['file']
-        if(file.filename == ''):
-            flash('No selected file')
-            return(redirect(request.url))
-        if(file and allowed_file(file.filename)):
+        file = request.form['imageUrl']
+        #if(file.filename == ''):
+           # flash('No selected file')
+           # print('no selected file')
+           # return(redirect(request.url))
+        if(file):
 
             # Get files and styled image
-            style_strength = float(request.form['styleRange'])
+            print('disini')
+            style_strength = float(1)
             output_img = 'static/out/' + time.ctime().replace(' ', '_')+'.jpg'
             style_image = stylize(file, output_img,
                                   "models/"+style+".model", style_strength, 0)
 
             # S3 Bucket
-            bucketName = "styletransferbucket"
+            bucketName = "photartbucket"
 
             # S3 upload image
             s3 = boto3.client('s3')
@@ -89,9 +93,18 @@ def upload():
                           Key=output_img, ContentType='image/jpeg')
 
             session['file'] = output_img
-            return(render_template("uploaded.html"))
+            # Generate the URL to get 'key-name' from 'bucket-name'
+            url = s3.generate_presigned_url(
+                ClientMethod='get_object',
+                Params={
+                    'Bucket': bucketName,
+                    'Key': output_img
+                }
+            )
+            return(url)
 
         flash('Please select right file')
+        print('please select right file')
         return(redirect(request.url))
 
 
@@ -114,7 +127,7 @@ def method_error(e):
 def download():
 
     # S3 download
-    Bucket = "styletransferbucket"
+    Bucket = "photartbucket"
     Key = session['file']
     outputName = "stylize.jpg"
 
