@@ -9,7 +9,7 @@ participating in [annual pytorch hackathon 2021](https://pytorch2021.devpost.com
 
 ## note
 1. style transfer code in main repo.
-2. instagram DM bot in bot folder.
+2. instagram DM bot in /photartbot folder.
 
 ## references
 1. https://developers.facebook.com/docs/messenger-platform/instagram/sample-experience
