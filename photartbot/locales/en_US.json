@@ -1,0 +1,8 @@
+{
+	"menu": {
+		"about": "/about",
+		"start": "/start",
+		"suggestion": "menu.suggestion",
+		"help": "menu.help"
+	}
+}

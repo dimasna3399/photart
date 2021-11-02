@@ -1,0 +1,41 @@
+{
+  "name": "photart",
+  "version": "1.0.0",
+  "description": "instagram chatbot that turn your photo to art style powered by pytorch",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "lint": "./node_modules/.bin/eslint ."
+  },
+  "dependencies": {
+    "axios": "^0.24.0",
+    "body-parser": "^1.19.0",
+    "dotenv": "^8.1.0",
+    "express": "^4.17.1",
+    "form-data": "^4.0.0",
+    "i18n": "^0.8.3",
+    "keyv": "^4.0.3",
+    "node-fetch": "^2.6.1",
+    "path": "^0.12.7",
+    "xhr2": "^0.2.1"
+  },
+  "engines": {
+    "node": "^8.10.0 || ^10.13.0 || >=11.10.1"
+  },
+  "repository": {
+    "url": ""
+  },
+  "author": "",
+  "license": "",
+  "keywords": [
+    "instagram",
+    "facebook",
+    "webhook"
+  ],
+  "devDependencies": {
+    "eslint": "^6.2.2",
+    "eslint-config-prettier": "^6.1.0",
+    "eslint-plugin-prettier": "^3.1.0",
+    "prettier": "^1.18.2"
+  }
+}
